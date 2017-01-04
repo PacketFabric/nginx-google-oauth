@@ -69,11 +69,11 @@ if oauth_access_token == expected_token and oauth_expires and oauth_expires > ng
   if oauth_email then
     local email = oauth_email
     local oauth_user, oauth_domain = email:match("([^@]+)@(.+)")
-    -- If no whitelist or blacklist, match on domain
-    if not blacklist and domain then
-      if oauth_domain ~= domain then
+
+    if blacklist then
+      if string.find(" " .. blacklist .. " ", " " .. email .. " ") then
         if debug then
-          ngx.log(ngx.ERR, "DEBUG: "..email.." not in "..domain)
+          ngx.log(ngx.ERR, "DEBUG: "..email.." in blacklist")
         end
         return ngx.exit(ngx.HTTP_UNAUTHORIZED)
       end
@@ -84,14 +84,17 @@ if oauth_access_token == expected_token and oauth_expires and oauth_expires > ng
         if debug then
           ngx.log(ngx.ERR, "DEBUG: "..email.." not in whitelist")
         end
-        return ngx.exit(ngx.HTTP_UNAUTHORIZED)
+        if not domain then
+          return ngx.exit(ngx.HTTP_UNAUTHORIZED)
+        end
       end
     end
 
-    if blacklist then
-      if string.find(" " .. blacklist .. " ", " " .. email .. " ") then
+    -- If no whitelist or blacklist, match on domain
+    if domain then
+      if oauth_domain ~= domain then
         if debug then
-          ngx.log(ngx.ERR, "DEBUG: "..email.." in blacklist")
+          ngx.log(ngx.ERR, "DEBUG: "..email.." not in "..domain)
         end
         return ngx.exit(ngx.HTTP_UNAUTHORIZED)
       end
