@@ -70,7 +70,7 @@ if oauth_access_token == expected_token and oauth_expires and oauth_expires > ng
     local email = oauth_email
     local oauth_user, oauth_domain = email:match("([^@]+)@(.+)")
     -- If no whitelist or blacklist, match on domain
-    if not whitelist and not blacklist and domain then
+    if not blacklist and domain then
       if oauth_domain ~= domain then
         if debug then
           ngx.log(ngx.ERR, "DEBUG: "..email.." not in "..domain)
