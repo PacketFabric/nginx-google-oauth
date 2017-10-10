@@ -35,6 +35,7 @@ local secure_cookies = ngx.var.ngo_secure_cookies
 local token_secret = ngx.var.ngo_token_secret or "UNSET"
 local set_user = ngx.var.ngo_user
 local email_as_user = ngx.var.ngo_email_as_user
+local extra_validity = tonumber(ngx.var.ngo_extra_validity or "0")
 
 -- Force the user to set a token secret
 if token_secret == "UNSET" then
@@ -54,7 +55,7 @@ local oauth_email = ngx.unescape_uri(ngx.var.cookie_OauthEmail or "")
 local oauth_access_token = ngx.unescape_uri(ngx.var.cookie_OauthAccessToken or "")
 local expected_token = ngx.encode_base64(ngx.hmac_sha1(token_secret, cb_server_name .. oauth_email .. oauth_expires))
 
-if oauth_access_token == expected_token and oauth_expires and oauth_expires > ngx.time() then
+if oauth_access_token == expected_token and oauth_expires and oauth_expires > ngx.time() - extra_validity then
   -- Populate the nginx 'ngo_user' variable with our Oauth username, if requested
   if set_user then
     local oauth_user, oauth_domain = oauth_email:match("([^@]+)@(.+)")
