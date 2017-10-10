@@ -1,4 +1,3 @@
- 
 -- import requirements
 
 -- allow either cjson, or th-LuaJSON
@@ -13,7 +12,7 @@ end
 pcall(require,"https")
 local https = require "ssl.https" -- /usr/share/lua/5.1/https.lua
 local ltn12  = require("ltn12")
- 
+
 local uri = ngx.var.uri
 local uri_args = ngx.req.get_uri_args()
 local scheme = ngx.var.scheme
@@ -43,7 +42,7 @@ if token_secret == "UNSET" then
   return ngx.exit(ngx.HTTP_UNAUTHORIZED)
 end
 
--- See https://developers.google.com/accounts/docs/OAuth2WebServer 
+-- See https://developers.google.com/accounts/docs/OAuth2WebServer
 if uri == signout_uri then
   ngx.header["Set-Cookie"] = "OauthAccessToken==deleted; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
   return ngx.redirect(cb_scheme.."://"..server_name)
@@ -117,7 +116,7 @@ else
     ngx.log(ngx.ERR, "received "..auth_error.." from https://accounts.google.com/o/oauth2/auth")
     return ngx.exit(ngx.HTTP_UNAUTHORIZED)
   end
-    
+
   if debug then
     ngx.log(ngx.ERR, "DEBUG: fetching token for auth code "..auth_code)
   end
@@ -153,7 +152,7 @@ else
     Authorization = "Bearer "..access_token,
   }
 
-  local result_table = {} 
+  local result_table = {}
   local res2, code2, headers2, status2 = https.request({
     url = "https://www.googleapis.com/oauth2/v2/userinfo",
     method = "GET",
@@ -200,5 +199,5 @@ else
   if debug then
     ngx.log(ngx.ERR, "DEBUG: authorized "..json["email"]..", redirecting to "..uri_args["state"])
   end
-  return ngx.redirect(uri_args["state"]) 
+  return ngx.redirect(uri_args["state"])
 end
