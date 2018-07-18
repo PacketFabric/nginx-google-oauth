@@ -144,7 +144,7 @@ else
   local json  = jsonmod.decode( res )
   local access_token = json["access_token"]
   local expires = ngx.time() + json["expires_in"]
-  local cookie_tail = ";version=1;path=/;Max-Age="..json["expires_in"]
+  local cookie_tail = ";version=1;path=/;Max-Age=".. extra_validity + json["expires_in"]
   if secure_cookies then
     cookie_tail = cookie_tail..";secure"
   end
